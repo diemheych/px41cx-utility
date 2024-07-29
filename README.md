@@ -42,26 +42,29 @@ The program does some simple error checking, however, knowledge of the HP 41C se
 # Installation
 The program requires Python 3 and the intelhex module which can be found at: https://pypi.org/project/intelhex/
 # Usage
-usage: px41cx_utility.py [-h] [-m]</br> [-06 romfile page bank bankgroup modgroup]</br>
-                         [-07 romfile page bank bankgroup modgroup]</br>
-                         [-08 romfile page bank bankgroup modgroup]</br>
-                         [-09 romfile page bank bankgroup modgroup]</br>
-                         [-10 romfile page bank bankgroup modgroup]</br>
-                         [-11 romfile page bank bankgroup modgroup]</br>
-                         [-12 romfile page bank bankgroup modgroup]</br>
-                         [-13 romfile page bank bankgroup modgroup]</br>
-                         [-14 romfile page bank bankgroup modgroup]</br>
-                         [-15 romfile page bank bankgroup modgroup]</br>
-                         [-16 romfile page bank bankgroup modgroup]</br>
-                         [-17 romfile page bank bankgroup modgroup]</br> [-u1 USER1]
-                         [-u2 USER2] [-u3 USER3] [-u4 USER4] [-b BMPFILE]</br>
-                         infile [outfile]</br>
+```
+Usage: px41cx_utility.py [-h] [-m]</br> [-06 romfile page bank bankgroup modgroup]
+                         [-07 romfile page bank bankgroup modgroup]
+                         [-08 romfile page bank bankgroup modgroup]
+                         [-09 romfile page bank bankgroup modgroup]
+                         [-10 romfile page bank bankgroup modgroup]
+                         [-11 romfile page bank bankgroup modgroup]
+                         [-12 romfile page bank bankgroup modgroup]
+                         [-13 romfile page bank bankgroup modgroup]
+                         [-14 romfile page bank bankgroup modgroup]
+                         [-15 romfile page bank bankgroup modgroup]
+                         [-16 romfile page bank bankgroup modgroup]
+                         [-17 romfile page bank bankgroup modgroup]
+                         [-u1 USER1] [-u2 USER2] [-u3 USER3] [-u4 USER4]
+                         [-b BMPFILE]
+                         infile [outfile]
 
-Update ROMs and options in PX41CX Firmware.</br>
-</br>
-positional arguments:</br>
-  infile</br>
-  outfile</br>
+Update ROMs and options in PX41CX Firmware.
+
+positional arguments:
+  infile
+  outfile
+```
 # Examples
 To view the loaded modules and configured options of an existing PX41CX firmware specify a firmware filename only:
 ```
