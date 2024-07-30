@@ -29,12 +29,12 @@ the PX41CX Intel HEX format firmware file. These modules can be virtually plugge
 ROM locations 0 through 5 are reserved for the HP-41CX operating system. The remaining ROM locations 6 through 17 are available for the firmware default builtin ROMs or they can be replaced with the specific modules the user wishes to use. Adding or updating a ROM location requires specifying the ROM location, ROM filename, 41CX page the module is to be loaded into, the page bank, the bank group and the module group. The module group keeps multiple pages 
 from a single module together so they are all plugged into the PX41CX at the same time.
 
-Although ROM modules can be builtin to the PX41CX firmware from the source code, this does not provide a method for the end user to easily modify the available ROM modules. As the HP 41C series includes hundreds of optional HP, 3rd party and user community developed ROM modules there needs to be a relatively easy way to modify the PX41CX ROM modules available without the firmware being custom built to meet thousands of different possible configurations.
+Although ROM modules can be builtin to the PX41CX firmware from the source code, this does not provide a method for the end user to easily modify the available ROM modules. As the HP 41C series includes hundreds of optional HP, 3rd party and community developed ROM modules there needs to be a relatively easy way to modify the PX41CX ROM modules available without the firmware being custom built to meet thousands of different possible configurations.
 
 This program allows HP 41C series ROMs to be added or merged into an existing PX41CX firmware to produce a new firmware file that can be flashed onto the PX41CX.
 
 The PX41CX includes a number of other options that can be configured in the firmware including:
-- 4 lines of 32 characters of custom text which is displayed in the Info menu
+- 4 lines of 31 characters of custom text which is displayed in the Info menu
 - a simple BMP image that is displayed when the calculator is powered off
 
 The program does some simple error checking, however, knowledge of the HP 41C series memory space and requirements for the modules to be used is required.
