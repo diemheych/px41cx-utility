@@ -39,6 +39,8 @@ The PX41CX includes a number of other options that can be configured in the firm
 
 The program does some simple error checking, however, knowledge of the HP 41C series memory space and requirements for the modules to be used is required.
 
+ROM file archives that are regularly updated are available at: https://systemyde.com/hp41/archive.html
+
 # Installation
 The program requires Python 3 and the intelhex module which can be found at: https://pypi.org/project/intelhex/
 # Usage
