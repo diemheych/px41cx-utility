@@ -107,8 +107,11 @@ To replace the last 2 user ROMs with the 2 pages of the FORTH41 to be loaded int
 python px41cx_utility.py px41cx-fw01.hex new-fw.hex -16 FORTH4.ROM 4 1 0 12 -17 FORTH5.ROM e 1 0 12
 ```
 # Sample Power Off Splash Screens
-The Splash Images folder includes some sample BMP images which can be loaded using this utility and displayed when the PX41CX is turned off (if enabled in the configuration menu).
+The Splash_Images folder includes some sample BMP images (some shown below) which can be loaded using this utility and displayed when the PX41CX is turned off (if enabled in the configuration menu). Thanks to Pierre (https://clones.phweb.me/index.php?langue=EN) for creating many of these.
 
 ![PX](Splash_Images/PX.bmp)
 ![PX-ML](Splash_Images/PX-MemLost.bmp)
 ![PX-DARK](Splash_Images/PX-Dark.bmp)
+![PX41CX](Splash_Images/px41cx.bmp)
+![Robot](Splash_Images/robot.bmp)
+![Droid](Splash_Images/droid.bmp)
