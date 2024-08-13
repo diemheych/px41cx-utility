@@ -104,7 +104,7 @@ python px41cx_utility.py px41cx-fw01.hex new-fw.hex -06 PPCL.ROM c 1 0 10 -07 PP
 ```
 To replace the last 2 user ROMs with the 2 pages of the FORTH41 to be loaded into 41CX pages 4 (required) and E and store the new firmware in file new-fw.hex:
 ```
-python px41cx_utility.py px41cx-fw01.hex new-fw.hex -16 FORTH4.ROM 4 1 0 12 -17 FORTH5.ROM e 1 0 12
+python px41cx_utility.py px41cx-fw01.hex new-fw.hex -m -16 FORTH4.ROM 4 1 0 12 -17 FORTH5.ROM e 1 0 12
 ```
 # Sample Power Off Splash Screens
 The Splash_Images folder includes some sample BMP images (some shown below) which can be loaded using this utility and displayed when the PX41CX is turned off (if enabled in the configuration menu). Thanks to Pierre (https://clones.phweb.me/index.php?langue=EN) for creating many of these.
