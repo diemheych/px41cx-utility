@@ -176,10 +176,22 @@ if (arg_count - list(args.values()).count(None) == 1) or (not args['outfile'] an
         page, bank, group, modgroup = get_rom(ih, a)
         if page != 255:
             print_rom(ih, a)
-    print("User 1: '",ih.getsz(USER1).decode('utf-8'),"'",sep="")
-    print("User 2: '",ih.getsz(USER2).decode('utf-8'),"'",sep="")
-    print("User 3: '",ih.getsz(USER3).decode('utf-8'),"'",sep="")
-    print("User 4: '",ih.getsz(USER4).decode('utf-8'),"'",sep="")
+    if ih.getsz(USER1).decode('unicode_escape').isprintable():
+        print("User 1: '",ih.getsz(USER1).decode('unicode_escape'),"'",sep="")
+    else:
+        print("User 1: '",repr(ih.getsz(USER1))[2:-1],"'",sep="")
+    if ih.getsz(USER2).decode('unicode_escape').isprintable():
+        print("User 2: '",ih.getsz(USER2).decode('unicode_escape'),"'",sep="")
+    else:
+        print("User 2: '",repr(ih.getsz(USER2))[2:-1],"'",sep="")
+    if ih.getsz(USER3).decode('unicode_escape').isprintable():
+        print("User 3: '",ih.getsz(USER3).decode('unicode_escape'),"'",sep="")
+    else:
+        print("User 3: '",repr(ih.getsz(USER3))[2:-1],"'",sep="")
+    if ih.getsz(USER4).decode('unicode_escape').isprintable():
+        print("User 4: '",ih.getsz(USER4).decode('unicode_escape'),"'",sep="")
+    else:
+        print("User 4: '",repr(ih.getsz(USER4))[2:-1],"'",sep="")
     exit(0)
 
 newrom = IntelHex()
