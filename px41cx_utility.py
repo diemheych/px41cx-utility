@@ -104,7 +104,7 @@ def read_rom(barr, filename):
     try:
         f = open(filename, "rb")
     except:
-        print("Error opening hex file:",args['infile'])
+        print("Error opening ROM file:",filename)
         exit(1)
         
     rom = bytearray(f.read())
