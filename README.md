@@ -36,6 +36,7 @@ This program allows HP 41C series ROMs to be added or merged into an existing PX
 The PX41CX includes a number of other options that can be configured in the firmware including:
 - 4 lines of 31 characters of custom text which is displayed in the Info menu
 - a simple BMP image that is displayed when the calculator is powered off
+- the date language (English, French, Spanish, German, Italian, Portuguese)
 
 The program does some simple error checking, however, knowledge of the HP 41C series memory space and requirements for the modules to be used is required.
 
@@ -60,6 +61,7 @@ Usage: px41cx_utility.py [-h] [-m]
                          [-17 romfile page bank bankgroup modgroup]
                          [-u1 USER1] [-u2 USER2] [-u3 USER3] [-u4 USER4]
                          [-b BMPFILE]
+                         [-eng | -fre | -spa | -ger | -ita | -por]
                          infile [outfile]
 
 Update ROMs and options in PX41CX Firmware.
@@ -73,6 +75,7 @@ To view the loaded modules and configured options of an existing PX41CX firmware
 ```
 python px41cx_utility.py px41cx-fw01.hex 
 PX41CX Firmware: px41cx-fw01.hex
+VER: 0.902
 ROM[00]: Page: 0 Bank: 1 Bank Group: 0 Mod Group: 00 XNUT0 
 ROM[01]: Page: 1 Bank: 1 Bank Group: 0 Mod Group: 00 XNUT1 
 ROM[02]: Page: 2 Bank: 1 Bank Group: 0 Mod Group: 00 XNUT2 
@@ -95,6 +98,7 @@ User 1: 'Line 0'
 User 2: 'Line 1'
 User 3: 'Line 2'
 User 4: 'Line 3'
+Date Format:  English
 ```
 User 1 through User 4 are the custom text lines displayed in the PX41CX Info menu.
 
