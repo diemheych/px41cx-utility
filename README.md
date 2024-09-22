@@ -1,9 +1,9 @@
 # px41cx-utility
-Python program to add ROM images to an existing PX41CX firmware and/or modify other firmware options.
+Python program to add ROM images to an existing PX-41CX firmware and/or modify other firmware options.
 
 The PX41CX is a modern replica of the class HP-41CX programmable calculator released in the 1980s. The implementation runs the original
 HP-41CX ROM by implementing an emulator of the HP Nut processor. The PX41CX also supports up to 12 optional ROM modules which are encapsulated within
-the PX41CX Intel HEX format firmware file. These modules can be virtually plugged in and ejected from the PX41CX menu system as required.
+the PX-41CX Intel HEX format firmware file. These modules can be virtually plugged in and ejected from the PX-41CX menu system as required.
 
 | ROM         | Page        | Bank     | Bank Group | Module Group | Name   | Description |
 |-------------|-------------|----------|------------|--------------|--------|-------------|
@@ -27,13 +27,13 @@ the PX41CX Intel HEX format firmware file. These modules can be virtually plugge
 | 17          | f           | 1        | 0          | 12            | PPCU R  | Default - Available |
 
 ROM locations 0 through 5 are reserved for the HP-41CX operating system. The remaining ROM locations 6 through 17 are available for the firmware default builtin ROMs or they can be replaced with the specific modules the user wishes to use. Adding or updating a ROM location requires specifying the ROM location, ROM filename, 41CX page the module is to be loaded into, the page bank, the bank group and the module group. The module group keeps multiple pages 
-from a single module together so they are all plugged into the PX41CX at the same time.
+from a single module together so they are all plugged into the PX-41CX at the same time.
 
-Although ROM modules can be builtin to the PX41CX firmware from the source code, this does not provide a method for the end user to easily modify the available ROM modules. As the HP 41C series includes hundreds of optional HP, 3rd party and community developed ROM modules there needs to be a relatively easy way to modify the PX41CX ROM modules available without the firmware being custom built to meet thousands of different possible configurations.
+Although ROM modules can be builtin to the PX-41CX firmware from the source code, this does not provide a method for the end user to easily modify the available ROM modules. As the HP 41C series includes hundreds of optional HP, 3rd party and community developed ROM modules there needs to be a relatively easy way to modify the PX-41CX ROM modules available without the firmware being custom built to meet thousands of different possible configurations.
 
-This program allows HP 41C series ROMs to be added or merged into an existing PX41CX firmware to produce a new firmware file that can be flashed onto the PX41CX.
+This program allows HP 41C series ROMs to be added or merged into an existing PX-41CX firmware to produce a new firmware file that can be flashed onto the PX41CX.
 
-The PX41CX includes a number of other options that can be configured in the firmware including:
+The PX-41CX includes a number of other options that can be configured in the firmware including:
 - 4 lines of 31 characters of custom text which is displayed in the Info menu
 - a simple BMP image that is displayed when the calculator is powered off
 - the date language (English, French, Spanish, German, Italian, Portuguese)
@@ -71,7 +71,7 @@ positional arguments:
   outfile
 ```
 # Examples
-To view the loaded modules and configured options of an existing PX41CX firmware specify a firmware filename only:
+To view the loaded modules and configured options of an existing PX-41CX firmware specify a firmware filename only:
 ```
 python px41cx_utility.py px41cx-fw01.hex 
 PX41CX Firmware: px41cx-fw01.hex
@@ -111,7 +111,7 @@ To replace the last 2 user ROMs with the 2 pages of the FORTH41 to be loaded int
 python px41cx_utility.py px41cx-fw01.hex new-fw.hex -m -16 FORTH4.ROM 4 1 0 12 -17 FORTH5.ROM e 1 0 12
 ```
 # Sample Power Off Splash Screens
-The Splash_Images folder includes some sample BMP images (some shown below) which can be loaded using this utility and displayed when the PX41CX is turned off (if enabled in the configuration menu). Thanks to Pierre (https://clones.phweb.me/index.php?langue=EN) for creating many of these.
+The Splash_Images folder includes some sample BMP images (some shown below) which can be loaded using this utility and displayed when the PX-41CX is turned off (if enabled in the configuration menu). Thanks to Pierre (https://clones.phweb.me/index.php?langue=EN) for creating many of these.
 
 ![PX](Splash_Images/PX.bmp)
 ![PX-ML](Splash_Images/PX-MemLost.bmp)
