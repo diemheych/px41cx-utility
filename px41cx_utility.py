@@ -1,5 +1,5 @@
 #
-# px41cx_roms.py - load ROM files into PX41CX firmware and map to memory pages and
+# px41cx_utility.py - load ROM files into PX41CX firmware and map to memory pages and
 #                  set options
 #
 #
