@@ -43,7 +43,7 @@ The program does some simple error checking, however, knowledge of the HP 41C se
 ROM file archives that are regularly updated are available at: https://systemyde.com/hp41/archive.html
 
 # Installation
-The program requires Python 3 and the intelhex module which can be found at: https://pypi.org/project/intelhex/
+The latest version of the program requires Python 3.8 (or greater) and the intelhex module which can be found at: https://pypi.org/project/intelhex/
 # Usage
 ```
 Usage: px41cx_utility.py [-h] [-m]
