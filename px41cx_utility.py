@@ -253,9 +253,13 @@ if (arg_count - list(args.values()).count(None) == 1) or (not args['outfile'] an
     exit(0)
 
 newrom = IntelHex()
-#blank = IntelHex()
 
 ba = bytearray(b'\0' * 5120)
+
+if (version := ih.find(FW_VERSION)) != -1:
+    ver = ih.getsz(version).decode('utf-8')
+    if ver == 'VER: 0.903':
+        ROM_LOCATION = [0x8000, 0x9400, 0xab00, 0xbc00, 0xd000, 0xe400, 0x10030, 0x11430, 0x12830, 0x13c30, 0x15030, 0x16430, 0x18000, 0x19400, 0x1a800, 0x1bc00, 0x1d000, 0x1e400]
 
 changed = False
 
