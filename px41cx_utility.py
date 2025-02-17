@@ -268,6 +268,7 @@ for key in args:
         num = int(key[-2:])
         romfilename = args[key][0]
         read_rom(ba, romfilename)
+        romfilename = os.path.basename(args[key][0])
         newrom.frombytes(ba, offset=ROM_LOCATION[num])
         ih.merge(newrom, overlap="replace")
         try:
