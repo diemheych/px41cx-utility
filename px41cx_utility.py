@@ -1,5 +1,5 @@
 #
-# px41cx_utility.py - load ROM files into PX41CX firmware and map to memory pages and
+# px41cx_roms.py - load ROM files into PX41CX firmware and map to memory pages and
 #                  set options
 #
 #
@@ -21,6 +21,7 @@
 #                          [-u3 "custom string line 3"}
 #                          [-u4 "custom string line 4"]
 #                          [-b BMPFILE]
+#                          [-f FONTFILE]
 #                          [-eng | -fre | -spa | -ger | -ita | -por]
 #                          infile [outfile]
 #
@@ -58,9 +59,9 @@
 # You should have received a copy of the GNU General Public License along with
 # this program. If not, see <https://www.gnu.org/licenses/>.
 #
-import os
 import argparse
 from intelhex import IntelHex
+import png
 
 ROM_MAP = 0xf800
 ROM_MAP_SIZE = 18
@@ -69,7 +70,6 @@ ROM_NAMES = 0xf848
 # ROM name length including null
 NAME_LEN = 7
 ROM_LOCATION = [0x8000, 0x9400, 0xab00, 0xbc00, 0xd000, 0xe400, 0x10000, 0x11400, 0x12800, 0x13c00, 0x15000, 0x16400, 0x18000, 0x19400, 0x1a800, 0x1bc00, 0x1d000, 0x1e400]
-#USER1 = 0xf926
 USER1 = 0xf8c6
 USER2 = USER1 + 0x20
 USER3 = USER2 + 0x20
@@ -77,7 +77,9 @@ USER4 = USER3 + 0x20
 SPLASH = 0x1f800
 MAGIC1 = 0x0c
 MAGIC2 = 0x94
+FONTS_MAGIC = b'f0NtZ'
 IMAGE_SIZE = 2048
+UNCOMPRESSED_IMAGE_SIZE = int(250 * 122 / 8)
 WIDTH = 250
 HEIGHT = 122
 FW_VERSION = b'VER: '
@@ -99,6 +101,10 @@ MONTH_ITA = b'GEN\x00FEB\x00MAR\x00APR\x00MAG\x00GIU\x00LUG\x00AGO\x00SET\x00OTT
 DATE_POR = b'JAN\x00FEV\x00MAR\x00ABR\x00MAI\x00JUN\x00JUL\x00AGO\x00SET\x00OCT\x00NOV\x00DEZ\x00DOM\x00SEG\x00TER\x00QUA\x00QUI\x00SEX\x00SAB\x00'
 DAY_POR = b'DOM\x00SEG\x00TER\x00QUA\x00QUI\x00SEX\x00SAB\x00'
 MONTH_POR = b'JAN\x00FEV\x00MAR\x00ABR\x00MAI\x00JUN\x00JUL\x00AGO\x00SET\x00OCT\x00NOV\x00DEZ\x00'
+FONT_SIZE = 240 * 192 / 8
+FONT_DEFAULT = b'\x00\x5f\xff\x07\xa0\x05\x78\x07\xfe\xf0\x3e\x00\xf0\x3f\xff\xbd\x2a\xaa\x0a\xf5\x55\xff\xd4\x00\x50\x2b\x40\xbf\xc2\xf0\x07\xc0\xbc\xff\x00\x7c\xab\xc0\xa0\x5f\x80\x00\x1f\xff\xff\xff\xff'
+#FONT_14SEG = b'\x00\x5f\xff\x07\xa0\x05\x78\x07\xfe\xf0\x3e\x00\xf0\x3f\xff\xbd\x2a\xaa\x0a\xf5\x55\xff\xd4\x00\x50\x2b\x40\xbf\xc2\xf0\x07\xc0\xbc\xff\x00\x7c\xab\xc0\xa0\x5f\x80\x00\x6f\xff\xf9\xf6\xaa'
+FONT_14SEG = b'\x00\x5f\xff\x07\xa0\x05\x78\x07\xfe\xf0\x3e\x00\xf0\x3f\xff\xbd\x2a\xaa\x0a\xff\xff\xff\xd4\x00\x50\x2b\x40\xbf\xc2\xf0\x07\xc0\xbc\xff\x00\x7c\xab\xc0\xa0\xff\x80\x00\x6f\xff\xf9\xf6\xaa'
 
 def set_rom(hex, rom, page, bank, bankgroup, modgroup):
     hex[ROM_MAP + ROM_MAP_ENTRY * rom + 0] = page
@@ -176,6 +182,7 @@ parser.add_argument('-u2',dest='user2',type=str,help="Info menu configurable tex
 parser.add_argument('-u3',dest='user3',type=str,help="Info menu configurable text line 3")
 parser.add_argument('-u4',dest='user4',type=str,help="Info menu configurable text line 4")
 parser.add_argument('-b',dest='bmpfile',type=str,help="BMP file for splash screen" )
+parser.add_argument('-s',dest='smpfile',type=str,help="BMP file for splash screen" )
 group = parser.add_mutually_exclusive_group()
 group.add_argument("-eng", action="store_true",help="Set date strings to English")
 group.add_argument("-fre", action="store_true",help="Set date strings to French")
@@ -183,6 +190,7 @@ group.add_argument("-spa", action="store_true",help="Set date strings to Spanish
 group.add_argument("-ger", action="store_true",help="Set date strings to German")
 group.add_argument("-ita", action="store_true",help="Set date strings to Italian")
 group.add_argument("-por", action="store_true",help="Set date strings to Portuguese")
+parser.add_argument('-f',dest='fontfile',type=str,help="Font PNG file" )
 
 
 args = vars(parser.parse_args())
@@ -198,11 +206,20 @@ if ih[0] != MAGIC1 and ih[1] != MAGIC2:
     print("Error:",args['infile']," does not look like PX41CX firmware")
     exit(1)
 
+if (version := ih.find(FW_VERSION)) != -1:
+    hex_version = ih.getsz(version).decode('utf-8')
+
+    if "0.905" in hex_version:
+        USER1 = 0xf8e4
+        USER2 = USER1 + 0x20
+        USER3 = USER2 + 0x20
+        USER4 = USER3 + 0x20
 
 if (arg_count - list(args.values()).count(None) == 1) or (not args['outfile'] and not args['bmpfile']):
     print("PX41CX Firmware:",args['infile'])
-    if (version := ih.find(FW_VERSION)) != -1:
-        print(ih.getsz(version).decode('utf-8'))
+
+    if version != -1:
+        print(hex_version)
 
     for a in range(ROM_MAP_SIZE):
         page, bank, group, modgroup = get_rom(ih, a)
@@ -251,16 +268,18 @@ if (arg_count - list(args.values()).count(None) == 1) or (not args['outfile'] an
     else:
         date_fmt = "Unknown"
     print("Date Format: ",date_fmt)
+    font = "Unknown"
+    if ih.find(FONT_DEFAULT) != -1:
+        font = "Default"
+    elif ih.find(FONT_14SEG) != -1:
+        font = "14Segment"
+    print("Font: ",font)
     exit(0)
 
 newrom = IntelHex()
+#blank = IntelHex()
 
 ba = bytearray(b'\0' * 5120)
-
-if (version := ih.find(FW_VERSION)) != -1:
-    ver = ih.getsz(version).decode('utf-8')
-    if ver == 'VER: 0.903':
-        ROM_LOCATION = [0x8000, 0x9400, 0xab00, 0xbc00, 0xd000, 0xe400, 0x10030, 0x11430, 0x12830, 0x13c30, 0x15030, 0x16430, 0x18000, 0x19400, 0x1a800, 0x1bc00, 0x1d000, 0x1e400]
 
 changed = False
 
@@ -269,7 +288,6 @@ for key in args:
         num = int(key[-2:])
         romfilename = args[key][0]
         read_rom(ba, romfilename)
-        romfilename = os.path.basename(args[key][0])
         newrom.frombytes(ba, offset=ROM_LOCATION[num])
         ih.merge(newrom, overlap="replace")
         try:
@@ -422,6 +440,110 @@ if args['eng'] or args['fre'] or args['spa'] or args['ger'] or args['ita'] or ar
     if not changed:
         print("Error: Date strings not found")
 
+if args['smpfile']:
+    filename = args['smpfile']
+
+    try:
+        f = open(filename, "rb")
+    except:
+        print("Error opening BMP file:",filename)
+        exit(1)
+
+    bmp = bytearray(f.read())
+    f.close()
+
+    if bmp[0] != 0x42 or bmp[1] != 0x4d:
+        print("Error not a BMP file:",filename)
+        exit(1)
+
+    if bmp[0x1c] != 1:
+        print("Error BMP depth not 1:",filename)
+        exit(1)
+
+    offset = bmp[11] * 256 + bmp[10]
+    width = bmp[19] * 256 + bmp[18]
+    width_pad = -(-width//32) * 32
+    height = bmp[23] * 256 + bmp[22]
+
+# Display is 250x122
+
+    img = bytearray(b'\x00' * UNCOMPRESSED_IMAGE_SIZE)
+    print("Size: ",len(bmp[offset:]))
+#    print(bmp[offset:])
+
+    print("*********** SPLASH TOP +++++++++++++")
+
+    for r in range(11):
+        print("Block-Row: ",r)
+        for c in range(0,250,2):
+            block = [0,0,0]
+            for i in range(12):
+                if r == 10 and i > 1:
+                    pixel = 0
+                else:
+                    if access_bit(bmp, 8 * offset + (10-r) * 12 + i + c) ==1:
+                        pixel = 2
+                    else:
+                        pixel = 0
+                    if access_bit(bmp, 8 * offset + (10-r) * 12 + i + c + 1) ==1:
+                        pixel = pixel | 1
+                block[int(i // 4)] = block[int(i // 4)] | (pixel << ((6 - (i%4) * 2)))
+            if r == 5 and c == 114:
+                print("*********** SPLASH BOTTOM +++++++++++++")
+            print(hex(block[0]),end=', ')
+            if r < 10:
+                print(hex(block[1]),end=', ')
+                print(hex(block[2]),end=', ')
+        print("")
+      
+    exit(1)
+              
+      
+########
+        
+#    rleimg = bytearray(b'\x00' * IMAGE_SIZE)
+    rleimg = bytearray(b'\x00' * IMAGE_SIZE)
+    inverted = bmp[offset-2]
+    total_bytes = 0
+    for r in range(HEIGHT,0,-1):
+        pixel_count = 0
+        last_colour = 123
+        for c in range(WIDTH):
+            colour = access_bit(bmp, 8 * offset + (r-1) * width_pad + c)
+            if inverted:
+                if colour:
+                    colour = 0
+                else:
+                    colour = 1
+            if colour != last_colour:
+                if pixel_count > 0:
+                    rleimg[total_bytes] = pixel_count
+                    total_bytes += 1
+                    if total_bytes >= IMAGE_SIZE:
+                        break
+                if c == 0:
+                    rleimg[total_bytes] = colour
+                    total_bytes += 1
+                pixel_count = 1
+                last_colour = colour
+            else:
+                pixel_count += 1
+        if total_bytes >= IMAGE_SIZE:
+            break
+        rleimg[total_bytes] = pixel_count
+        total_bytes += 1
+        if total_bytes >= IMAGE_SIZE:
+            break
+
+#    print("Total Bytes:",total_bytes)
+#    print(rleimg)
+    if total_bytes >= IMAGE_SIZE:
+        print("BMP image too complex - not loaded:",filename)
+    else:
+        changed = True
+        newrom.frombytes(rleimg, offset=SPLASH)
+        ih.merge(newrom, overlap="replace")
+    
 if args['bmpfile']:
     filename = args['bmpfile']
 
@@ -501,7 +623,70 @@ if args['bmpfile']:
         newrom.frombytes(rleimg, offset=SPLASH)
         ih.merge(newrom, overlap="replace")
     
-####
+if args['fontfile']:
+    try:
+        reader = png.Reader(args['fontfile'])
+    except:
+        print("Error opening font file:",filename)
+        exit(1)
+
+    width, height, pixels, metadata = reader.read()
+
+# Convert pixels to list
+    pixel_list = list(pixels)
+
+    ba = bytearray(b'\0' * int(224 * 192 / 8))
+
+    if width != 240 or height != 192 or not metadata['greyscale'] or metadata['alpha'] or metadata['planes'] != 1 or metadata['bitdepth'] != 8 or metadata['planes'] != 1:
+        print("Error: PNG file wrong type or size")
+        exit(1)
+
+
+    count = 0
+    for r in range(8):
+        for c in range(16):
+            for pc in range(0,14,2):
+                data = 0
+                for pr in range(12):
+                    row = pixel_list[r * 24 + pr]
+                    tp = ((~row[(c * (14 + 1)  + pc)]&0xff) & 1) << 1
+                    tp = tp | ((~row[(c * (14 + 1)  + pc +1)]&0xff) & 1)
+                    data = data | (tp << int((24 / 2 - 1 - pr) * 2))
+                ba[count] = (data>>16) & 0xff
+                count = count + 1
+                ba[count] = (data>>8) & 0xff
+                count = count + 1
+                ba[count] = data & 0xff
+                count = count + 1
+
+            for pc in range(0,14,2):
+                data = 0
+                for pr in range(12):
+                    row = pixel_list[r * 24 + pr + 12]
+                    tp = ((~row[(c * (14 + 1)  + pc)]&0xff) & 1) << 1
+                    tp = tp | ((~row[(c * (14 + 1)  + pc +1)]&0xff) & 1)
+                    data = data | (tp << int((24 / 2 - 1 - pr) * 2))
+                ba[count] = (data>>16) & 0xff
+                count = count + 1
+                ba[count] = (data>>8) & 0xff
+                count = count + 1
+                ba[count] = data & 0xff
+                count = count + 1
+
+    if len(ba) != 5376:
+        print("Error: PNG decodes to wrong size")
+        exit(1)
+    if (font_addr := ih.find(FONTS_MAGIC)) != -1:
+        changed = True
+        font_addr = font_addr + len(FONTS_MAGIC) + 72
+        newrom.frombytes(ba, offset=font_addr)
+        ih.merge(newrom, overlap="replace")
+    else:
+        print("Error: Cannot determine font location, font not changed")
+
+
+# If anything has changed then write new firmware in output file
+
 if changed:
     ih.write_hex_file(args['outfile'], byte_count=16)
 else:
